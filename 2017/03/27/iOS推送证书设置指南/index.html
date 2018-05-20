@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+          iOS推送证书设置指南 - Nick的博客 | Nick&#39;s Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://unclepluto.github.io/2017/03/27/iOS推送证书设置指南/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+    <!-- hack iOS CSS :active style -->
+
+    <body ontouchstart="">
+
+        <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Nick&#39;s Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archives/">Archives</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+            <!-- Main Content -->
+            
+<!-- Image to hack wechat -->
+<!-- <img src="http://unclepluto.github.io/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="{{ site.baseurl }}/{% if page.header-img %}{{ page.header-img }}{% else %}{{ site.header-img }}{% endif %}" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/home-bg.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                          <a class="tag" href="/tags/#iOS" title="iOS">iOS</a>
+                        
+                    </div>
+                    <h1>iOS推送证书设置指南</h1>
+                    <h2 class="subheading"></h2>
+                    <span class="meta">
+                        Posted by Nick Deng on
+                        2017-03-27
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h1 id="创建-App-ID"><a href="#创建-App-ID" class="headerlink" title="创建 App ID"></a>创建 App ID</h1><ul>
+<li>登陆 <a href="https://developer.apple.com/account/" target="_blank" rel="noopener">苹果开发者中心</a> 点击图标进入证书管理界面</li>
+</ul>
+<p><img src="http://upload-images.jianshu.io/upload_images/1875403-732ea400a105d4f1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="点击Certificates, IDs &amp; Profiles图标"></p>
+<ul>
+<li>在证书管理界面创建相应的 APPID，Bundle ID 与项目对应即可</li>
+</ul>
+<p><img src="http://upload-images.jianshu.io/upload_images/1875403-cb676f413bb86d26.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="选择APPIDs选项"></p>
+<ul>
+<li>创建 App ID，如果已经自动创建好了可以跳过这一步骤</li>
+</ul>
+<p><img src="http://upload-images.jianshu.io/upload_images/1875403-bd05f8f9952ff05f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="点击 ➕"></p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1875403-42a9827d9c9811b6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="创建App ID，Bundle ID与项目对应即可"></p>
+<ul>
+<li>在创建 App ID 的时候在 App Services 内勾选 Push Notifications 功能，申请推送权限<br><img src="http://upload-images.jianshu.io/upload_images/1875403-14f96e1cb0742d83.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="勾选Push Notifications"></li>
+</ul>
+<p>到这里 App ID 已经创建完毕</p>
+<hr>
+<h1 id="配置和下载证书"><a href="#配置和下载证书" class="headerlink" title="配置和下载证书"></a>配置和下载证书</h1><ul>
+<li><p>选择证书管理界面 点击 ➕ 创建一个新的证书<br><img src="http://upload-images.jianshu.io/upload_images/1875403-bc0263e0279e8c0d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Snip20170305_9.png"></p>
+</li>
+<li><p>我们直接选择创建一个测试证书</p>
+</li>
+</ul>
+<p><img src="http://upload-images.jianshu.io/upload_images/1875403-861153bbed1dedb6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="创建一个测试证书"></p>
+<ul>
+<li>选择你刚刚的创建的 App ID</li>
+</ul>
+<p><img src="http://upload-images.jianshu.io/upload_images/1875403-d8d16f051e91bfa6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="选择配置的App ID"></p>
+<ul>
+<li>按照提示导出签名证书并上传</li>
+</ul>
+<p><img src="http://upload-images.jianshu.io/upload_images/1875403-4b7018714092828e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="签名证书"></p>
+<ul>
+<li><p>进入系统自带的钥匙串访问应用，点击 <em>钥匙串访问</em> -&gt;<em>证书助理</em>-&gt;<em>从证书颁发机构请求证书</em><br><img src="http://upload-images.jianshu.io/upload_images/1875403-78f74d35cdbd483c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="请求证书"></p>
+</li>
+<li><p>填写相关信息，并且选择保存到本地磁盘</p>
+</li>
+</ul>
+<p><img src="http://upload-images.jianshu.io/upload_images/1875403-96ad0a340099115a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="保存到磁盘"></p>
+<ul>
+<li>回到将刚刚请求完的证书上传至刚刚的页面</li>
+</ul>
+<p><img src="http://upload-images.jianshu.io/upload_images/1875403-41a70be82c53bb2f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="选择.certSigningRequest上传"></p>
+<ul>
+<li>点击 download 获取 aps.cer 证书文件</li>
+</ul>
+<p><img src="http://upload-images.jianshu.io/upload_images/1875403-ee8996d4ce5ab578.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="获取 aps.cer"></p>
+<ul>
+<li>双击 aps.cer 文件，会自动打开钥匙串程序</li>
+</ul>
+<p><img src="http://upload-images.jianshu.io/upload_images/1875403-4eaa9350a26005a5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="双击aps.cer文件"></p>
+<ul>
+<li>鼠标右击，点击导出 p12 证书</li>
+</ul>
+<p><img src="http://upload-images.jianshu.io/upload_images/1875403-5e01bbb54b4faa5a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="导出p12证书"></p>
+<ul>
+<li>自定义一个密码用来保护 p12 证书</li>
+</ul>
+<p><img src="http://upload-images.jianshu.io/upload_images/1875403-a47f2839be1a0b74.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="设定密码"></p>
+<p>到此推送的 p12 证书已经创建完毕了，可将该证书上传至服务器</p>
+<hr>
+<h1 id="Provisioning-Profile-的创建"><a href="#Provisioning-Profile-的创建" class="headerlink" title="Provisioning Profile 的创建"></a>Provisioning Profile 的创建</h1><ul>
+<li><p>创建 Provisioning Profile 的前提是已经创建了待发布应用所使用的 Bundle ID 的 App ID，而且为该 App ID 创建了 APNs 证书，也就是完成了我上面叙述的几个步骤，这个时候我们就可以来创建 Provisioning Profile 了。</p>
+</li>
+<li><p>选择 Provisioning Profile，点击 ➕ 进行创建</p>
+</li>
+</ul>
+<p><img src="http://upload-images.jianshu.io/upload_images/1875403-4d8f350bb508c1c6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Snip20170305_29.png"></p>
+<ul>
+<li>这个地方红框中框出的选项依次代表</li>
+</ul>
+<blockquote>
+<ol>
+<li>开发测试环境</li>
+</ol>
+</blockquote>
+<ol start="2">
+<li>上传到 appstore 的生产环境（如果是企业证书这里会是 In House）</li>
+<li>用于内部测试的生产环境</li>
+</ol>
+<p><img src="http://upload-images.jianshu.io/upload_images/1875403-233381d11ea451b0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="这里我们选择测试环境"></p>
+<ul>
+<li>选择对应的 App ID</li>
+</ul>
+<p><img src="http://upload-images.jianshu.io/upload_images/1875403-39fd63c592324462.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="选择对应的App ID"></p>
+<ul>
+<li><p>选择所属的开发者证书<br><img src="http://upload-images.jianshu.io/upload_images/1875403-5cbb5695a6e8ca58.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="选择所属的开发者证书"></p>
+</li>
+<li><p>为该 Provisioning Profile 选择将要安装的设备<br><img src="http://upload-images.jianshu.io/upload_images/1875403-9dec75cafec8651e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="选择将要安装的设备"></p>
+</li>
+<li><p>给该 Provisioning Profile 填写名称<br><img src="http://upload-images.jianshu.io/upload_images/1875403-72291489068d4790.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="填写名称"></p>
+</li>
+<li><p>创建完成点击下载<br><img src="http://upload-images.jianshu.io/upload_images/1875403-8f38a08aca900714.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="创建完成"></p>
+</li>
+<li><p>线上环境的创建方式相同，你可以在填写名称时表明时测试环境还是先上环境</p>
+</li>
+</ul>
+<hr>
+<h1 id="Xcode-配置"><a href="#Xcode-配置" class="headerlink" title="Xcode 配置"></a>Xcode 配置</h1><ul>
+<li><p>双击下载下来的 Provisioning Profile，可以添加到 xcode</p>
+</li>
+<li><p>点击项目，选择目标 TARGETS 后进入 Build Setting 界面，搜索“Code signing”，加载创建 Provisioning Profile 时指定的<em>开发者证书</em></p>
+</li>
+</ul>
+<p><img src="http://upload-images.jianshu.io/upload_images/1875403-f75a901983bf069c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="指定开发者证书"></p>
+<ul>
+<li>导入对应的 Provisioning Profile<strong> debug 导入沙盒环境的 Provisioning Profile，release 导入生产环境的 Provisioning Profile</strong></li>
+</ul>
+<p><img src="http://upload-images.jianshu.io/upload_images/1875403-05590819ecc559e1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="导入Provisioning Profile"></p>
+<ul>
+<li>在 xcode Capabilities 开启推送功能</li>
+</ul>
+<p><img src="http://upload-images.jianshu.io/upload_images/1875403-1484ea491afb8641.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Capabilities 开启推送"></p>
+<h1 id="接入云信-apns-推送"><a href="#接入云信-apns-推送" class="headerlink" title="接入云信 apns 推送"></a>接入云信 apns 推送</h1><ul>
+<li><p>完成相应证书配置</p>
+</li>
+<li><p>登陆云信后台 <a href="http://app.netease.im/login" target="_blank" rel="noopener">云信后台</a>，进入证书管理界面</p>
+</li>
+</ul>
+<p><img src="http://upload-images.jianshu.io/upload_images/1875403-8a54142c9b1e3abd.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="进入云信证书管理"></p>
+<ul>
+<li>在标识管理中填入自己应用的 Bundle ID</li>
+</ul>
+<p><img src="http://upload-images.jianshu.io/upload_images/1875403-2882df771335bb82.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Bundle ID填写"></p>
+<ul>
+<li>将导出的好的 p12 证书上传到云信后台，<strong>需要注意证书一定要与项目中的环境对应，沙盒证书对应测试环境，生产证书对应线上环境，如果出现错误会导致推送收不到</strong>。</li>
+</ul>
+<p><img src="http://upload-images.jianshu.io/upload_images/1875403-b3a1706b37cc29dc.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="上传证书"></p>
+<p>#复习一下导出 p12 证书</p>
+<ul>
+<li>点击 download 获取 aps.cer 证书文件</li>
+</ul>
+<p><img src="http://upload-images.jianshu.io/upload_images/1875403-ee8996d4ce5ab578.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="获取 aps.cer"></p>
+<ul>
+<li>双击 aps.cer 文件，会自动打开钥匙串程序</li>
+</ul>
+<p><img src="http://upload-images.jianshu.io/upload_images/1875403-4eaa9350a26005a5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="双击aps.cer文件"></p>
+<ul>
+<li>鼠标右击，点击导出 p12 证书</li>
+</ul>
+<p><img src="http://upload-images.jianshu.io/upload_images/1875403-5e01bbb54b4faa5a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="导出p12证书"></p>
+<ul>
+<li>自定义一个密码用来保护 p12 证书</li>
+</ul>
+<p><img src="http://upload-images.jianshu.io/upload_images/1875403-a47f2839be1a0b74.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="设定密码"></p>
+<p>到此推送的 p12 证书已经创建完毕了，可将该证书上传至服务器</p>
+<h1 id="编写推送代码"><a href="#编写推送代码" class="headerlink" title="编写推送代码"></a>编写推送代码</h1><figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  AppDelegate.m</span></span><br><span class="line"><span class="comment">//  YXPushTester</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//  Created by Nick Deng on 2017/3/5.</span></span><br><span class="line"><span class="comment">//  Copyright © 2017 UnclePluto. All rights reserved.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#import <span class="meta-string">"AppDelegate.h"</span></span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"NIMSDK.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">AppDelegate</span> () &lt;<span class="title">NIMLoginManagerDelegate</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">AppDelegate</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">- (<span class="built_in">BOOL</span>)application:(<span class="built_in">UIApplication</span> *)application didFinishLaunchingWithOptions:(<span class="built_in">NSDictionary</span> *)launchOptions &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"%@"</span>,launchOptions);</span><br><span class="line"><span class="meta">#if defined(DEBUG)||defined(_DEBUG)</span></span><br><span class="line">    <span class="comment">// debug环境初始化sdk并声明后台上传的证书名</span></span><br><span class="line">    [[NIMSDK sharedSDK] registerWithAppID:<span class="string">@"你的appkey"</span> cerName:<span class="string">@"云信后台上传的测试证书名"</span>];  </span><br><span class="line"><span class="meta">#else</span></span><br><span class="line">    <span class="comment">// release 环境初始化sdk并声明后台上传的证书名</span></span><br><span class="line">    [[NIMSDK sharedSDK] registerWithAppID:<span class="string">@"你的appkey"</span> cerName:<span class="string">@"云信后台上传的线上证书名"</span>];  </span><br><span class="line"><span class="meta">#endif</span></span><br><span class="line">    [[[NIMSDK sharedSDK] loginManager] addDelegate:<span class="keyword">self</span>];</span><br><span class="line">    <span class="comment">// 向苹果服务器注册apns服务</span></span><br><span class="line">    [<span class="keyword">self</span> registerAPNs];</span><br><span class="line">    <span class="comment">// 登陆一个云信账号，只有成功登陆后才可以收到云信推送</span></span><br><span class="line">    [[[NIMSDK sharedSDK] loginManager] login:<span class="string">@"account"</span></span><br><span class="line">                                       token:<span class="string">@"password"</span></span><br><span class="line">                                  completion:^(<span class="built_in">NSError</span> *error) &#123;</span><br><span class="line">                                      <span class="built_in">NSLog</span>(<span class="string">@"%@"</span>,error);</span><br><span class="line">                                  &#125;];</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">YES</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 设置登陆回调监听</span></span><br><span class="line">- (<span class="keyword">void</span>)onLogin:(NIMLoginStep)step&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"%ld"</span>,(<span class="keyword">long</span>)step);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 注册具体实现</span></span><br><span class="line">- (<span class="keyword">void</span>)registerAPNs</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> ([[<span class="built_in">UIApplication</span> sharedApplication] respondsToSelector:<span class="keyword">@selector</span>(registerForRemoteNotifications)])</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">UIUserNotificationType</span> types = <span class="built_in">UIRemoteNotificationTypeBadge</span> | <span class="built_in">UIRemoteNotificationTypeSound</span> |      <span class="built_in">UIRemoteNotificationTypeAlert</span>;</span><br><span class="line">        <span class="built_in">UIUserNotificationSettings</span> *settings = [<span class="built_in">UIUserNotificationSettings</span> settingsForTypes:types</span><br><span class="line">                                                                                 categories:<span class="literal">nil</span>];</span><br><span class="line">        [[<span class="built_in">UIApplication</span> sharedApplication] registerUserNotificationSettings:settings];</span><br><span class="line">        [[<span class="built_in">UIApplication</span> sharedApplication] registerForRemoteNotifications];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">UIRemoteNotificationType</span> types = <span class="built_in">UIRemoteNotificationTypeAlert</span> | <span class="built_in">UIRemoteNotificationTypeSound</span> |        <span class="built_in">UIRemoteNotificationTypeBadge</span>;</span><br><span class="line">        [[<span class="built_in">UIApplication</span> sharedApplication] registerForRemoteNotificationTypes:types];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// 注册成功 苹果服务器下发deviceToken</span></span><br><span class="line">- (<span class="keyword">void</span>)application:(<span class="built_in">UIApplication</span> *)app didRegisterForRemoteNotificationsWithDeviceToken:(<span class="built_in">NSData</span> *)deviceToken</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 将deviceToken 上传至云信服务器。这样云信服务器才知道推送到哪个设备</span></span><br><span class="line">    [[NIMSDK sharedSDK] updateApnsToken:deviceToken];</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"didRegisterForRemoteNotificationsWithDeviceToken:  %@"</span>, deviceToken);</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">- (<span class="keyword">void</span>)application:(<span class="built_in">UIApplication</span> *)application didReceiveRemoteNotification:(<span class="built_in">NSDictionary</span> *)userInfo&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"receive remote notification:  %@"</span>, userInfo);</span><br><span class="line">&#125;</span><br><span class="line">- (<span class="keyword">void</span>)application:(<span class="built_in">UIApplication</span> *)app didFailToRegisterForRemoteNotificationsWithError:(<span class="built_in">NSError</span> *)error</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"fail to get apns token :%@"</span>,error);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line">```</span><br></pre></td></tr></table></figure>
+
+
+                <hr>
+
+                
+
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2017/04/16/iOS-MD5-SHA1-加密/" data-toggle="tooltip" data-placement="top" title="iOS MD5 SHA1 加密">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                </ul>
+
+                
+
+                
+
+            </div>
+    <!-- Side Catalog Container -->
+        
+
+    <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://www.jianshu.com/u/1603c58a9f9a" target="_blank">大叔的简书</a></li>
+                    
+                        <li><a href="http://blog.kaijun.rocks" target="_blank">Kaijun&#39;s Blog</a></li>
+                    
+                        <li><a href="http://huangxuan.me" target="_blank">Hux Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+                <!-- Footer -->
+                <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Nick&#39;s Blog 2018 
+                    <br>
+                    Theme by <a href="http://huangxuan.me">Hux</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Ported by <a href="http://blog.kaijun.rocks">Kaijun</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=kaijun&repo=hexo-theme-huxblog&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://unclepluto.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+<!-- Side Catalog -->
+
+
+
+
+
+                    <!-- Image to hack wechat -->
+                    <!-- <img src="http://unclepluto.github.io/img/icon_wechat.png" width="0" height="0" /> -->
+                    <!-- Migrate from head to bottom, no longer block render and still work -->
+
+    </body>
+
+</html>

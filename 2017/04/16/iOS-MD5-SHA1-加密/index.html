@@ -13,11 +13,11 @@
 
     <title>
         
-          自建git自动发布 - Nick的博客 | Nick&#39;s Blog
+          iOS MD5 SHA1 加密 - Nick的博客 | Nick&#39;s Blog
         
     </title>
 
-    <link rel="canonical" href="http://unclepluto.github.io/2018/05/20/自建git自动发布/">
+    <link rel="canonical" href="http://unclepluto.github.io/2017/04/16/iOS-MD5-SHA1-加密/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -166,14 +166,16 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                          <a class="tag" href="/tags/#服务器" title="服务器">服务器</a>
+                          <a class="tag" href="/tags/#加密" title="加密">加密</a>
+                        
+                          <a class="tag" href="/tags/#iOS" title="iOS">iOS</a>
                         
                     </div>
-                    <h1>自建git自动发布</h1>
+                    <h1>iOS MD5 SHA1 加密</h1>
                     <h2 class="subheading"></h2>
                     <span class="meta">
                         Posted by Nick Deng on
-                        2018-05-20
+                        2017-04-16
                     </span>
                 </div>
             </div>
@@ -192,39 +194,16 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-                <h3 id="背景概述"><a href="#背景概述" class="headerlink" title="背景概述"></a>背景概述</h3><p>之前的项目都是使用系统自带的 SFTP 功能，然后用类似 FileZilla 类似的软件远程链接主机，然后用文件传输的方式来进行线上的文件更新。</p>
-<p>不过这种方式在网站搭建前期是 OK 的，但是当网站的逻辑逐渐变得复杂，更新的文件越来越多，路径越来越多，那么每次更新文件都是一个极其复杂的问题了。</p>
-<p>而且如果当文件在更新到线上出现问题的时候，那么退回上一个稳定版本也是相当于又要重复把之前的文件覆盖回来，如果万一有些人大大咧咧没有做任何备份，那么要退回的时候简直就是灾难了。</p>
-<p>所以在这样一个背景下，那么一套用 git 简单实现的自动发布系统就能很好的解决这个问题。</p>
-<h3 id="前置知识"><a href="#前置知识" class="headerlink" title="前置知识"></a>前置知识</h3><p>首先既然用了 git 那么基础的 git 知识就需要了解了，这里不细讲，各位可以去看下廖雪峰大大的 git 教程<a href="https://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000" target="_blank" rel="noopener">廖雪峰 git 教程</a>。</p>
-<h3 id="自动发布逻辑"><a href="#自动发布逻辑" class="headerlink" title="自动发布逻辑"></a>自动发布逻辑</h3><p>在有了基本的 git 知识之后，先来讲讲这个自动发布逻辑是什么。其实这套自动发布系统还是比较简单的，相当于就是先在自己的服务器上搭建一个私有的 git 仓库，然后开发者在本地将代码推送到这个本地的仓库上去，然后在你的网站根目录上 clone 一份代码下来。也就是现在有三个端，开发者端，服务端 git 仓库，网站目录端。</p>
-<p>现在要实现的就是当开发者端向服务端 git 仓库推送最新的代码段时，网站目录端会自动将最新的更新版本同步到本地。</p>
-<p>那么如果实现这个过程呢，这个地方就要用的 githook 的功能了。</p>
-<h3 id="搭建三个端"><a href="#搭建三个端" class="headerlink" title="搭建三个端"></a>搭建三个端</h3><ul>
-<li>开发者端这个就不多说了，看了廖雪峰的教程应该基本都懂了简单来说就是下面三个步骤。</li>
+                <h1 id="MD5-加密实现方法"><a href="#MD5-加密实现方法" class="headerlink" title="MD5 加密实现方法"></a>MD5 加密实现方法</h1><p>MD5 的时间方法可以直接使用<strong> &lt;CommonCrypto/CommonCrypto.h&gt; </strong>这个 C 语言的库来进行实现。我们可以实现一个 NSString 的分类类扩展 NSString 的方法，上下具体代码：</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">-(<span class="built_in">NSString</span>*)stringToMD5:(<span class="built_in">NSString</span> *)str&#123;</span><br><span class="line">    <span class="comment">// 将接受的参数转为UTF-8格式</span></span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">char</span> *cstr = [str UTF8String];</span><br><span class="line">    <span class="comment">// 设定接受的结果数组长度</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> result[CC_MD5_DIGEST_LENGTH];</span><br><span class="line">    <span class="comment">// 将字符串转换成了32位的16进制数列</span></span><br><span class="line">    CC_MD5(cstr, (CC_LONG)strlen(cstr), result);</span><br><span class="line">    <span class="comment">// 创建一个可变字符串</span></span><br><span class="line">    <span class="built_in">NSMutableString</span> *saveResult = [<span class="built_in">NSMutableString</span> string];</span><br><span class="line">    <span class="comment">// 组装对应的字符串，%02x就是输出两位16进制数据，不足2为补0</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; CC_MD5_DIGEST_LENGTH; i++) &#123;</span><br><span class="line">        [saveResult appendFormat:<span class="string">@"%02x"</span>,result[i]];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> saveResult;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="SHA1-加密实现方式"><a href="#SHA1-加密实现方式" class="headerlink" title="SHA1 加密实现方式"></a>SHA1 加密实现方式</h1><p>SHA1 的实现方式跟 MD5 类似，也是可以直接使用&lt;CommonCrypto/CommonCrypto.h&gt;这个库，具体看下代码：</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">-(<span class="built_in">NSString</span>*)stringToSHA1:(<span class="built_in">NSString</span> *)str&#123;</span><br><span class="line">    <span class="comment">// 转化位cstring 或者类似MD5的方式也行 const char *cstr = [str UTF8String];</span></span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">char</span> *cstr = [str cStringUsingEncoding:<span class="built_in">NSUTF8StringEncoding</span>];</span><br><span class="line">    <span class="comment">// 生成对应的NSData对象</span></span><br><span class="line">    <span class="built_in">NSData</span> *data = [<span class="built_in">NSData</span> dataWithBytes:cstr length:<span class="keyword">self</span>.length];</span><br><span class="line">    <span class="comment">// 创建一个20个位的1字节数组</span></span><br><span class="line">    uint8_t digest[CC_SHA1_DIGEST_LENGTH];</span><br><span class="line">    <span class="comment">// 转化为对应的16进制数字</span></span><br><span class="line">    CC_SHA1(data.bytes, data.length, digest);</span><br><span class="line">    <span class="comment">// 声明一个40字符的string对象</span></span><br><span class="line">    <span class="built_in">NSMutableString</span> *result = [<span class="built_in">NSMutableString</span> stringWithCapacity:CC_SHA1_DIGEST_LENGTH *<span class="number">2</span>];</span><br><span class="line">    <span class="comment">// 组装加密结果</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span> ; i &lt; CC_SHA1_DIGEST_LENGTH; i++) &#123;</span><br><span class="line">        [result appendFormat:<span class="string">@"%02x"</span>,digest[i]];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="知识点"><a href="#知识点" class="headerlink" title="知识点"></a>知识点</h1><ul>
+<li>1 字节 uint8_t</li>
+<li>2 字节 uint16_t</li>
+<li>4 字节 uint32_t</li>
+<li>8 字节 uint64_t</li>
 </ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> git init //初始化</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> git add -A</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> git commit -m <span class="string">"搭建本地仓库"</span></span></span><br></pre></td></tr></table></figure>
-<p>或者你可以等到服务端部署完毕后再 clone 一个远端仓库下来即可。</p>
-<ul>
-<li>创建 git 服务端仓库</li>
-</ul>
-<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ git <span class="keyword">clone </span>--<span class="keyword">bare </span>my_project my_project.git</span><br><span class="line"><span class="keyword">Cloning </span>into <span class="keyword">bare </span>repository <span class="string">'my_project.git'</span>...</span><br><span class="line">done.</span><br></pre></td></tr></table></figure>
-<p>这个时候本地就会有一个自己项目的裸仓库了<br><img src="https://upload-images.jianshu.io/upload_images/1875403-26b613f11ef4be8b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="git仓库副本"></p>
-<ul>
-<li>将仓库放到服务器现在你有了仓库的副本，剩下要做的就是把仓库放到服务器上并设置你的协议。 假设一个域名为 <code>git.example.com</code> 的服务器已经架设好，并可以通过 SSH 连接，我们可以把所有的 Git 仓库放在<code>/opt/git</code> 目录下。 假设服务器上存在 <code>/opt/git/</code>目录，你可以通过以下命令复制你的裸仓库来创建一个新仓库：</li>
-</ul>
-<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ scp -r my_project<span class="selector-class">.git</span> user@git<span class="selector-class">.example</span><span class="selector-class">.com</span>:/opt/git</span><br></pre></td></tr></table></figure>
-<p>这个地方的 user 要有对应目录的相关权限，不过话说在这个阶段大家一般都是会有 root 直接操作的:)。</p>
-<p>在这个命令执行成功后，应该在你的服务器上对应的路径就有一个<code>my_project.git</code>的仓库文件了。</p>
-<p>现在相当于你有一个叫<code>git.example.com:/opt/git/my_project.git</code>的远程仓库，你现在就可以像操作一些 github 的远程仓库一样操作你这个私有的远程仓库了。例如：</p>
-<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git <span class="keyword">clone</span> <span class="title">root</span>@git.example.com:/opt/git/my_project.git</span><br></pre></td></tr></table></figure>
-<h3 id="网站目录搭建"><a href="#网站目录搭建" class="headerlink" title="网站目录搭建"></a>网站目录搭建</h3><p>比如你现在的网站根目录是<code>/var/www</code>,那么你可以进入你的网站目录中去 clone 你刚刚部署的哪个远程仓库，如果你部署的仓库与你网站的服务器是一台服务器，那么根据上面的你可以直接：</p>
-<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd /var/www</span><br><span class="line">git <span class="keyword">clone</span>  <span class="title">/opt</span>/git/my_project.git</span><br></pre></td></tr></table></figure>
-<p>这个时候你就在你的网站目录下部署了一个简单的 git 项目，然后你再把你的服务器访问路径指向到你需要访问的路径。</p>
-<h3 id="自动部署-hook-脚本"><a href="#自动部署-hook-脚本" class="headerlink" title="自动部署 hook 脚本"></a>自动部署 hook 脚本</h3><p>上面基本上吧三个端都部署完成了，现在就是要走下自动部署脚本，首先找到你部署的服务端 git 仓库，里面有个 hook 文件夹，在这个文件夹下我们创建一个<code>post-receive</code>脚本，然后在这个编辑这个脚本文件，脚本如下：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#判断是不是远端仓库</span></span><br><span class="line"></span><br><span class="line">IS_BARE=$(git rev-parse --is-bare-repository)</span><br><span class="line"><span class="keyword">if</span> [ -z <span class="string">"<span class="variable">$IS_BARE</span>"</span> ]; <span class="keyword">then</span></span><br><span class="line"><span class="built_in">echo</span> &gt;&amp;2 <span class="string">"fatal: post-receive: IS_NOT_BARE"</span></span><br><span class="line"><span class="built_in">exit</span> 1</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">unset</span> GIT_DIR</span><br><span class="line">DeployPath=<span class="string">"/var/www/my_project"</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"===================Uncle Plut===================="</span></span><br><span class="line"><span class="built_in">cd</span> <span class="variable">$DeployPath</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"deploying the my_project"</span></span><br><span class="line"></span><br><span class="line">＃git stash</span><br><span class="line"></span><br><span class="line"><span class="comment">#git pull origin master</span></span><br><span class="line"></span><br><span class="line">git fetch --all</span><br><span class="line">git reset --hard origin/master</span><br><span class="line"></span><br><span class="line"><span class="comment"># gitbook build  如果是gitbook 最好等待一段时间给gitbook build 一些构造时间</span></span><br><span class="line"><span class="comment"># sleep 15  如果只是普通的推送，这两段可以不要</span></span><br><span class="line"></span><br><span class="line">time=`date`</span><br><span class="line"><span class="built_in">echo</span> <span class="string">"my_project pull at webserver at time: <span class="variable">$time</span>."</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"================================================"</span></span><br></pre></td></tr></table></figure>
-<p>那么现在当这个仓库收到了开发者端的 push 的时候，就会把 master 的最新代码同步到网站的项目目录中去了。</p>
-<p>到此自动发布部署完成。</p>
 
 
                 <hr>
@@ -233,9 +212,13 @@
 
                 <ul class="pager">
                     
+                        <li class="previous">
+                            <a href="/2017/12/26/AFNetWorking框架使用笔记/" data-toggle="tooltip" data-placement="top" title="AFNetWorking框架使用笔记">&larr; Previous Post</a>
+                        </li>
+                    
                     
                         <li class="next">
-                            <a href="/2017/12/26/AFNetWorking框架使用笔记/" data-toggle="tooltip" data-placement="top" title="AFNetWorking框架使用笔记">Next Post &rarr;</a>
+                            <a href="/2017/03/27/iOS推送证书设置指南/" data-toggle="tooltip" data-placement="top" title="iOS推送证书设置指南">Next Post &rarr;</a>
                         </li>
                     
                 </ul>
